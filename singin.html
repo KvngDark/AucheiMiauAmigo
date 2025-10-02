@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Encontre seu Pet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .form-container {
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-page {
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            width: 100%;
+        }
+        
+        .form-page.hidden {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .form-page.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="tel"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+        
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .row .form-group {
+            flex: 1;
+        }
+        
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: #4a90e2;
+        }
+        
+        .file-upload p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .file-name {
+            color: #4a90e2;
+            font-weight: 500;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .checkbox-group input {
+            margin-right: 10px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .login-link a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        
+        .user-type {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .user-type.active {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cadastro</h1>
+            <p>Ajude na busca pelo amigo perdido de alguém</p>
+        </div>
+        
+        <div class="form-container">
+            <!-- Seletor de tipo de usuário -->
+            <div class="user-type-selector">
+                <div class="user-type active" id="tutor-type">Tutor</div>
+                <div class="user-type" id="ong-type">ONG</div>
+            </div>
+            
+            <!-- Formulário de Cadastro de Tutor -->
+            <div id="tutor-form">
+                <!-- Primeira tela do cadastro de tutor -->
+                <div class="form-page active" id="tutor-page1">
+                    <h2>Crie sua conta</h2>
+                    <div class="form-group">
+                        <label for="tutor-first-name">Primeiro nome</label>
+                        <input type="text" id="tutor-first-name" placeholder="Yan">
+                    </div>
+                    <div class="form-group">
+                        <label for="tutor-last-name">Último nome</label>
+                        <input type="text" id="tutor-last-name" placeholder="Cardoso">
+                    </div>
+                    <div class="form-group">
+                        <label for="tutor-email">Email</label>
+                        <input type="email" id="tutor-email" placeholder="yancardoso@outlook.com.br">
+                    </div>
+                    <div class="form-group">
+                        <label for="tutor-cpf">CPF</label>
+                        <input type="text" id="tutor-cpf" placeholder="999.999.999-99">
+                    </div>
+                    <div class="form-group">
+                        <label for="tutor-password">Senha</label>
+                        <input type="password" id="tutor-password" placeholder="**********">
+                    </div>
+                    <div class="form-group">
+                        <label for="tutor-confirm-password">Confirme sua senha</label>
+                        <input type="password" id="tutor-confirm-password" placeholder="**********">
+                    </div>
+                   
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="nextTutorPage()">Próximo →</button>
+                    </div>
+                    <div class="login-link">
+                        Já possui uma conta? <a href="#">Faça login</a>
+                    </div>
+                </div>
+                
+                <!-- Segunda tela do cadastro de tutor -->
+                <div class="form-page hidden" id="tutor-page2">
+                    <h2>Informações pessoais</h2>
+                    <div class="form-group">
+                        <label for="tutor-phone">Telefone</label>
+                        <input type="tel" id="tutor-phone" placeholder="(19) 99999 - 9999">
+                    </div>
+                    <div class="form-group">
+                        <label for="tutor-street">Logradouro</label>
+                        <input type="text" id="tutor-street" placeholder="Rua das flores">
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="tutor-number">Número</label>
+                            <input type="text" id="tutor-number" placeholder="9999">
+                        </div>
+                        <div class="form-group">
+                            <label for="tutor-house-type">Tipo de casa</label>
+                            <input type="text" placeholder="tutor-house-type">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="tutor-uf">UF</label>
+                            <input type="text" id="tutor-uf" placeholder="SP">
+                        </div>
+                        <div class="form-group">
+                            <label for="tutor-city">Cidade</label>
+                            <input type="text" id="tutor-city" placeholder="São José do Vale do Rio Preto">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Foto</label>
+                        <div class="file-upload" onclick="document.getElementById('tutor-photo').click()">
+                            <p>Arraste e solte o arquivo</p>
+                            <div class="file-name">Rita_exemplo.png</div>
+                        </div>
+                        <input type="file" id="tutor-photo" style="display: none;">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="prevTutorPage()">← Anterior</button>
+                        <button class="btn-primary">Concluir</button>
+                    </div>
+                    <div class="login-link">
+                        Já possui uma conta? <a href="#">Faça login</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulário de Cadastro de ONG -->
+            <div id="ong-form" class="hidden">
+                <!-- Primeira tela do cadastro de ONG -->
+                <div class="form-page active" id="ong-page1">
+                    <h2>Informações da ONG</h2>
+                    <div class="form-group">
+                        <label for="ong-first-name">Razão Social</label>
+                        <input type="text" id="ong-first-name" placeholder="G. A da Silva">
+                    </div>
+                    <div class="form-group">
+                        <label for="ong-last-name">Nome Fantasia</label>
+                        <input type="text" id="ong-last-name" placeholder="CZA Legalizações">
+                    </div>
+                    <div class="form-group">
+                        <label for="ong-email">Email da ONG</label>
+                        <input type="email" id="ong-email" placeholder="mundodospetsadoraveis@outlook.com.br">
+                    </div>
+                    <div class="form-group">
+                        <label for="ong-name">Nome do sócio-proprietário</label>
+                        <input type="text" id="ong-name" placeholder="Arnaldo Fritz">
+                    </div>
+                    <div class="form-group">
+                        <label for="ong-password">Senha</label>
+                        <input type="password" id="ong-password" placeholder="***********">
+                    </div>
+                    <div class="form-group">
+                        <label for="ong-confirm-password">Confirme sua senha</label>
+                        <input type="password" id="ong-confirm-password" placeholder="***********">
+                     </div>
+                    
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="nextOngPage()">Próximo →</button>
+                    </div>
+
+                    <div class="login-link">
+                        Já possui uma conta? <a href="login.html">Faça login</a>
+                    </div>
+                </div>
+                
+                <!-- Segunda tela do cadastro de ONG -->
+                <div class="form-page hidden" id="ong-page2">
+                    <h2>Informações adicionais</h2>
+                    <div class="form-group">
+                        <label for="ong-phone">Telefone</label>
+                        <input type="tel" id="ong-phone" value="(19) 99999 - 9999">
+                    </div>
+                    <div class="form-group">
+                        <label for="ong-street">Logradouro</label>
+                        <input type="text" id="ong-street" value="Rua das flores">
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="ong-number">Número</label>
+                            <input type="text" id="ong-number" value="9999">
+                        </div>
+                        <div class="form-group">
+                            <label for="ong-house-type">Tipo de casa</label>
+                            <input type="text" id="ong-house-type">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="ong-uf">UF</label>
+                            <input type="text" id="ong-uf" value="SP">
+                        </div>
+                        <div class="form-group">
+                            <label for="ong-city">Cidade</label>
+                            <input type="text" id="ong-city" value="São José do Vale do Rio Preto">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Logo</label>
+                        <div class="file-upload" onclick="document.getElementById('ong-logo').click()">
+                            <p>Arraste e solte o arquivo</p>
+                            <div class="file-name">logo-exemplo.png</div>
+                        </div>
+                        <input type="file" id="ong-logo" style="display: none;">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="prevOngPage()">← Anterior</button>
+                        <button class="btn-primary">Concluir</button>
+                    </div>
+                    <div class="login-link">
+                        Já possui uma conta? <a href="#">Faça login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Alternar entre formulários de Tutor e ONG
+        document.getElementById('tutor-type').addEventListener('click', function() {
+            document.getElementById('tutor-type').classList.add('active');
+            document.getElementById('ong-type').classList.remove('active');
+            document.getElementById('tutor-form').classList.remove('hidden');
+            document.getElementById('ong-form').classList.add('hidden');
+        });
+        
+        document.getElementById('ong-type').addEventListener('click', function() {
+            document.getElementById('ong-type').classList.add('active');
+            document.getElementById('tutor-type').classList.remove('active');
+            document.getElementById('ong-form').classList.remove('hidden');
+            document.getElementById('tutor-form').classList.add('hidden');
+        });
+        
+        // Navegação entre telas do formulário de Tutor
+        function nextTutorPage() {
+            document.getElementById('tutor-page1').classList.remove('active');
+            document.getElementById('tutor-page1').classList.add('hidden');
+            document.getElementById('tutor-page2').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('tutor-page2').classList.add('active');
+            }, 10);
+        }
+        
+        function prevTutorPage() {
+            document.getElementById('tutor-page2').classList.remove('active');
+            document.getElementById('tutor-page2').classList.add('hidden');
+            document.getElementById('tutor-page1').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('tutor-page1').classList.add('active');
+            }, 10);
+        }
+        
+        // Navegação entre telas do formulário de ONG
+        function nextOngPage() {
+            document.getElementById('ong-page1').classList.remove('active');
+            document.getElementById('ong-page1').classList.add('hidden');
+            document.getElementById('ong-page2').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('ong-page2').classList.add('active');
+            }, 10);
+        }
+        
+        function prevOngPage() {
+            document.getElementById('ong-page2').classList.remove('active');
+            document.getElementById('ong-page2').classList.add('hidden');
+            document.getElementById('ong-page1').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('ong-page1').classList.add('active');
+            }, 10);
+        }
+    </script>
+</body>
+</html>

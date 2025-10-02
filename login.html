@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Encontre seu Pet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #4a90e2 0%, #63b3ed 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: linear-gradient(to right, #4a90e2, #63b3ed);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            margin: 0 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            transform: translateY(-15px);
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-type {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .user-type.active {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .user-type:not(.active):hover {
+            background-color: #e9f4ff;
+        }
+        
+        .form-container {
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-form {
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            width: 100%;
+        }
+        
+        .login-form.hidden {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .login-form.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .toggle-password:hover {
+            color: #4a90e2;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .checkbox-group input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #4a90e2;
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+            color: #555;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #4a90e2, #63b3ed);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.4);
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #4a90e2;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .help-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 40px;
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        .forgot-password a {
+            color: #4a90e2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🐾</div>
+            </div>
+            <h1 id="login-title">Olá, tutor(a)!</h1>
+            <p id="login-subtitle">Faça login para acessar sua conta</p>
+        </div>
+        
+        <div class="user-type-selector">
+            <div class="user-type active" id="tutor-type">Tutor</div>
+            <div class="user-type" id="ong-type">ONG</div>
+        </div>
+        
+        <div class="form-container">
+            <!-- Formulário de Login para Tutores -->
+            <div class="login-form active" id="tutor-login">
+                <div class="form-group">
+                    <label for="tutor-email">Email</label>
+                    <input type="email" id="tutor-email" placeholder="nome@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="tutor-password">Senha</label>
+                    <div class="password-container">
+                        <input type="password" id="tutor-password" placeholder="••••••••••">
+                        <button type="button" class="toggle-password" onclick="togglePassword('tutor-password')">👁️</button>
+                    </div>
+                </div>
+                <div class="forgot-password">
+                    <a href="#">Esqueceu sua senha?</a>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tutor-help" checked>
+                    <label for="tutor-help">Ajude na busca pelo amigo perdido de alguém</label>
+                </div>
+                <button class="login-button" onclick="login()">Login</button>
+                <div class="register-link">
+                    Novo por aqui? <a href="singin.html">Crie uma conta</a>
+                </div>
+            </div>
+            
+            <!-- Formulário de Login para ONGs -->
+            <div class="login-form hidden" id="ong-login">
+                <div class="form-group">
+                    <label for="ong-email">Email</label>
+                    <input type="email" id="ong-email" placeholder="nome@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="ong-password">Senha</label>
+                    <div class="password-container">
+                        <input type="password" id="ong-password" placeholder="••••••••••">
+                        <button type="button" class="toggle-password" onclick="togglePassword('ong-password')">👁️</button>
+                    </div>
+                </div>
+                <div class="forgot-password">
+                    <a href="#">Esqueceu sua senha?</a>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="ong-help" checked>
+                    <label for="ong-help">Ajude na busca pelo amigo perdido de alguém</label>
+                </div>
+                <button class="login-button" onclick="login()">Login</button>
+                <div class="register-link">
+                    <a href="singin.html">Cadastrar minha organização</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Alternar entre formulários de login de Tutor e ONG
+        document.getElementById('tutor-type').addEventListener('click', function() {
+            document.getElementById('tutor-type').classList.add('active');
+            document.getElementById('ong-type').classList.remove('active');
+            document.getElementById('tutor-login').classList.remove('hidden');
+            document.getElementById('tutor-login').classList.add('active');
+            document.getElementById('ong-login').classList.remove('active');
+            document.getElementById('ong-login').classList.add('hidden');
+            
+            // Atualizar título e subtítulo
+            document.getElementById('login-title').textContent = 'Olá, tutor(a)!';
+            document.getElementById('login-subtitle').textContent = 'Faça login para acessar sua conta';
+        });
+        
+        document.getElementById('ong-type').addEventListener('click', function() {
+            document.getElementById('ong-type').classList.add('active');
+            document.getElementById('tutor-type').classList.remove('active');
+            document.getElementById('ong-login').classList.remove('hidden');
+            document.getElementById('ong-login').classList.add('active');
+            document.getElementById('tutor-login').classList.remove('active');
+            document.getElementById('tutor-login').classList.add('hidden');
+            
+            // Atualizar título e subtítulo
+            document.getElementById('login-title').textContent = 'Olá, ADM!';
+            document.getElementById('login-subtitle').textContent = 'Faça login para acessar sua organização';
+        });
+        
+        // Alternar visibilidade da senha
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        }
+        
+        // Simulação de login
+        function login() {
+            const activeType = document.querySelector('.user-type.active').textContent;
+            const emailField = activeType === 'Tutor' ? 'tutor-email' : 'ong-email';
+            const email = document.getElementById(emailField).value;
+            
+            if (!email) {
+                alert('Por favor, preencha o campo de email');
+                return;
+            }
+            
+            // Simulação de processo de login
+            const button = document.querySelector('.login-button');
+            const originalText = button.textContent;
+            button.textContent = 'Entrando...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+                alert(`Login realizado com sucesso para ${email}`);
+            }, 1500);
+        }
+        
+        // Adicionar interação com a tecla Enter
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+</body>
+</html>
